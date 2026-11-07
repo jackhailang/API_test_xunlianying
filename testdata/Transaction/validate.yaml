@@ -1,0 +1,86 @@
+# 保险核保
+# ${totalPremium} 来自试算 YAML 的 extract。
+# ${outChannelOrderId}、${timestamp} 默认由框架在用例开始时生成。
+# 如果渠道订单号必须使用试算响应里的值，请在 calculate.yaml 的 extract 中增加同名变量，后写入的值会覆盖内置值。
+# 核保返回的订单号必须在下面的 extract 中配置。示例路径是 data.orderId。
+# 真实字段可能是 data.orderNo、orderId、result.orderId 等，只改路径，不要写进 Python。
+name: 保险核保
+method: POST
+url: /gateway/mcp/outChannel/validate?c=WI
+headers:
+  Content-Type: application/json
+json:
+  requestId: "hebaojiaoyanma_${timestamp}"
+  c: "WI"
+  data:
+    productId: "A100000013"
+    outChannelOrderId: "${outChannelOrderId}"
+    effDate: "2020-02-20"
+    applyDate: "2020-12-19"
+    totalPremium: "${totalPremium}"
+    isNoticeConfirm: "Y"
+    isShareCoverage: "N"
+    discount: "1"
+    applicant:
+      name: "刘建汉"
+      birthday: "1948-12-07"
+      sex: "M"
+      idType: "1"
+      idno: "51310119881207121X"
+      contactInfo:
+        mobile: "16351656161"
+        email: "123@qq.com"
+        contactAddress:
+          provinceCode: "110000"
+          cityCode: "110000"
+          areaCode: "110101"
+      extend:
+        taxType: "null"
+        realCheckType: "1"
+    insurants:
+      - seqno: "1"
+        name: "刘建汉"
+        birthday: "1988-12-07"
+        sex: "M"
+        idType: "1"
+        idno: "51310119881207121X"
+        socialSecurity: "Y"
+        relationshipWithApplicant: "1"
+        relationshipWithPrimaryInsurant: "1"
+        contactInfo:
+          email: "11123@qq.com"
+        coverages:
+          - planType: "0"
+            sumInsured: "100000.00"
+            benLevel: "09"
+            period: "12"
+            periodDay: "0"
+            paymentPeriod: "12"
+            paymentPeriodDay: "0"
+            actualPrem: "${totalPremium}"
+            units: ""
+        healthNotes:
+          - questionId: "P19100001"
+            answer: "Y"
+            healthNoteSeq: "1"
+        isRenewal: "N"
+        extend:
+          realCheckType: "1"
+        realCheck: true
+    serviceAgreementInfo:
+      premType: "5"
+    authInfo:
+      initialChargeMode: "9"
+    others:
+      imgCheckType: "1"
+      assignEffdate: "Y"
+      extraInfo: {}
+extract:
+  # 承保报文通过 ${orderId} 使用这里提取的值。
+  # 路径与真实响应不一致时，修改右侧路径即可。
+  orderId: data.orderId
+assert:
+  - type: status_code
+    expected: 200
+  # - type: not_empty
+  #   path: data.orderId

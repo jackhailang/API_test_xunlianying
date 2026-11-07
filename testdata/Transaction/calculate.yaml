@@ -1,0 +1,38 @@
+# 保险试算
+# 本文件只描述这一个接口。试算结果要传给核保时，在 extract 里声明变量名和响应路径。
+# 试算成功时，保费在 data.totalPrem。上下文变量名仍用 totalPremium，供核保和承保引用。
+# 如果环境响应字段变化，只改 extract 右侧路径，不要改 Python。
+name: 保险试算
+method: POST
+url: /gateway/mcp/outChannel/calculatePremium?c=WI
+headers:
+  Content-Type: application/json
+json:
+  data:
+    applyDate: "2021-07-16"
+    insurants:
+      - birthday: "2000-12-22"
+        coverages:
+          - benLevel: "09"
+            period: "12"
+            periodDay: "0"
+            sumInsured: 1000
+        hasSocialSecurity: "true"
+        isRenewal: "N"
+        relationshipWithPrimaryInsurant: "1"
+        seqno: "1"
+        sex: "M"
+    isShareCoverage: "N"
+    premType: "1"
+    productId: "A100000013"
+extract:
+  # 左侧是上下文变量名，右侧是真实响应路径。当前接口返回 data.totalPrem。
+  totalPremium: data.totalPrem
+assert:
+  - type: status_code
+    expected: 200
+  - type: equals
+    path: returnCode
+    expected: "00"
+  - type: not_empty
+    path: data.totalPrem

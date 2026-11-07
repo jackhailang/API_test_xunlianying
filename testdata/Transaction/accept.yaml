@@ -1,0 +1,38 @@
+# 保险承保
+# ${orderId} 必须来自核保 YAML 的 extract。缺失时会提示检查核保 extract。
+# ${totalPremium} 来自试算 extract。
+# ${uuid}、${today}、${now_time}、${bkSerial}、${orderNo} 是框架内置变量。
+# 若银行流水号、支付订单号必须取接口响应，请在前置 YAML 用同名 extract 覆盖内置值。
+# 示例报文中的姓名、证件号、手机号和银行卡号均为接口文档样例，接入真实环境前请替换成测试数据。
+name: 保险承保
+method: POST
+url: /gateway/mcp/outChannel/accept?c=WI
+headers:
+  Content-Type: application/json
+json:
+  requestId: "${uuid}"
+  data:
+    orderId: "${orderId}"
+    tradeInfo:
+      amount: "${totalPremium}"
+      bankNo: "99012130"
+      bkSerial: "${bkSerial}"
+      bkTranDate: "${today}"
+      bkTranTime: "${now_time}"
+      merchantNo: "1370377702"
+      payType: "D"
+      paymentMethods: "zfb"
+      orderNo: "${orderNo}"
+    renewalInfo:
+      bankNo: "105"
+      accountName: "吃饭的"
+      accountNo: "123456"
+  c: "WI"
+# 承保响应需要继续传递保单号时，按真实字段填写，例如 data.policyNo。
+# extract:
+#   policyNo: data.policyNo
+assert:
+  - type: status_code
+    expected: 200
+  # - type: not_empty
+  #   path: data.policyNo

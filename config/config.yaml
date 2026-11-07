@@ -1,0 +1,38 @@
+# 保险接口自动化全局配置
+# 切换环境有两种方式，环境变量优先：
+# 1. 修改 current_env 为 test / uat / prod
+# 2. 执行前设置环境变量 TEST_ENV，例如 PowerShell：$env:TEST_ENV="uat"
+
+current_env: test
+
+# 默认请求超时（秒）。单个 YAML 可写 timeout 覆盖本值。
+timeout: 30
+
+# 日志配置。日志文件实际写入 output/logs/。
+log:
+  level: INFO
+  file_name: insurance_api.log
+
+# 各环境只维护 base_url。YAML 里的 url 写相对路径时会拼到这里。
+# 生产地址请改成实际域名，不要把生产账号写入本文件。
+environments:
+  test:
+    name: 测试环境
+    base_url: http://117.72.72.134:8080
+  uat:
+    name: UAT环境
+    base_url: http://117.72.72.134:8080
+  prod:
+    name: 生产环境
+    base_url: http://127.0.0.1:8080
+
+# 数据库不是出单主流程的必选项。
+# 账号优先读取环境变量 DB_USER，密码优先读取 DB_PASSWORD。
+# 这里的 password 留空，避免把真实口令写进仓库。
+database:
+  host: 127.0.0.1
+  port: 3306
+  user: root
+  password: ""
+  database: insurance
+  charset: utf8mb4
