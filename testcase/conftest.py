@@ -10,7 +10,7 @@ import sys
 from pathlib import Path
 
 import pytest
-
+import os
 # 保证从任意工作目录启动 pytest 时也能导入项目包。
 ROOT = Path(__file__).resolve().parent.parent
 if str(ROOT) not in sys.path:
@@ -82,6 +82,10 @@ def pytest_sessionfinish(session, exitstatus):
         不向外抛出。生成失败时写入日志，避免覆盖已经完成的测试结果。
     """
     if getattr(session.config.option, "collectonly", False):
+        return
+    # 如果在 Jenkins 环境下，跳过本地生成 HTML 报告，交给 Jenkins 插件处理
+    if os.getenv("JENKINS_HOME"):
+        logger.info("检测到 Jenkins 环境，跳过本地报告生成，由 Jenkins 插件接管。")
         return
     try:
         index_file = generate_allure_report()
